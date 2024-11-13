@@ -19,6 +19,10 @@ model User {
   lastName String?
   email String @unique
   profileImageURL String?
+  //  for passowrd bsed login
+  password String?
+  //  for google OAuth login
+  googleId String?
 
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
