@@ -21,7 +21,7 @@ model User {
   profileImageURL String?
   //  for passowrd bsed login
   password String?
-  //  for google OAuth login
+  // stores the Google `sub` claim for OAuth users
   googleId String?
 
   createAt DateTime @default(now())
