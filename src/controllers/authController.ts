@@ -82,7 +82,7 @@ const verifyGoogleCred = async (token:string, isSignup: boolean) => {
     }
 }
 
-export const verifySignIn = async (req: Request, res: Response): Promise<void> =>{
+export const signIn = async (req: Request, res: Response): Promise<void> =>{
     const {token,email,password} = req.body;
     let user;
     if(email && password){
@@ -165,4 +165,15 @@ export const signUp = async (req: Request,res: Response) => {
         res.status(200).json({message:"user signup successfull. please login now."})
         return;
     }
+}
+
+export const verifySignIn = async(req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if(token){
+        const user = JWTService.verifyToken(token);
+        res.status(200).json(user)
+    }else{
+        res.status(404).json({error:"token not found please login again"})
+    }
+    
 }

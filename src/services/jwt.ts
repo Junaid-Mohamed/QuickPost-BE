@@ -7,8 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 class JWTService{
     public static generateTokenForUser(user : User){
         const payload = {
-            id: user?.id,
-            email: user?.email
+            user
         }
 
         if(!JWT_SECRET){
@@ -16,6 +15,10 @@ class JWTService{
         }
         const JWTtoken = JWT.sign(payload,JWT_SECRET);
         return JWTtoken;
+    }
+
+    public static verifyToken(token: string){
+        return JWT.verify(token, JWT_SECRET);
     }
 }
 
