@@ -18,7 +18,7 @@ class JWTService{
     }
 
     public static verifyToken(token: string){
-        return JWT.verify(token, JWT_SECRET);
+        return JWT.verify(token, JWT_SECRET) as User;
     }
 }
 

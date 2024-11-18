@@ -24,6 +24,20 @@ model User {
   // stores the Google `sub` claim for OAuth users
   googleId String?
 
+  posts Post[]
+
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
+}
+
+model Post {
+  id String @id @default(cuid())
+  content String
+  imageUrl String?
+  likes Int @default(0)
+  author User @relation(fields: [authorId], references: [id])
+  authorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

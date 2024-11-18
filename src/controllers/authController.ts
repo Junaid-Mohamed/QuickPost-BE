@@ -1,6 +1,6 @@
 import axios from "axios";
 import bcrypt from "bcrypt";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prismaClient } from "../clients/db";
 import JWTService from "../services/jwt";
 
@@ -167,7 +167,7 @@ export const signUp = async (req: Request,res: Response) => {
     }
 }
 
-export const verifySignIn = async(req: Request, res: Response) => {
+export const verifyToken = async(req: Request, res: Response) => {
     const token = req.headers.authorization?.split(' ')[1];
     if(token){
         const user = JWTService.verifyToken(token);
@@ -175,5 +175,20 @@ export const verifySignIn = async(req: Request, res: Response) => {
     }else{
         res.status(404).json({error:"token not found please login again"})
     }
-    
+}
+
+//  this will verify the JWT and act as middleware to other protected routes
+export const verifySignIn = async(req: Request, res: Response,next: NextFunction) => {
+    try{
+        const token = req.headers.authorization?.split(' ')[1];
+    if(!token){
+        res.status(401).json({error:"token not found please login again"})
+        return
+    }
+    const user = JWTService.verifyToken(token);
+    req.user = user;
+    next();
+    }catch(error){
+        res.status(500).json({error:"Failed to authenticate token"})
+    }  
 }
