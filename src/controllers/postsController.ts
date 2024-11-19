@@ -54,3 +54,31 @@ export const createPosts = async(req: Request, res: Response): Promise<void> => 
     
 }
 
+
+
+export const updatePostWithLikes = async(req: Request, res: Response): Promise<void> =>{
+    const {postId, liked} = req.body;
+    try{
+        const updatedPost = await prismaClient.post.update({
+            where:{
+                id: postId
+            },
+            data:{
+                likes: !liked? {increment: 1} : {decrement: 1}
+            },
+            include:{
+                author:{
+                    select:{
+                        firstName: true,
+                        lastName: true,
+                        profileImageURL: true
+                    }
+                }
+            }
+        })
+        res.status(200).json(updatedPost);
+    }catch(error){
+        res.status(500).json({error:`couldnot update the post with likes ${error}`})
+    }
+}
+

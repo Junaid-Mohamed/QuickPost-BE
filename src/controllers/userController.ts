@@ -13,6 +13,15 @@ export const getUserPosts = async(req:Request, res:Response): Promise<void> =>{
         const userPosts = await prismaClient.post.findMany({
             where:{
                 authorId : user.id
+            },
+            include: {
+                author:{
+                    select:{
+                        firstName: true,
+                        lastName: true,
+                        profileImageURL: true
+                    }
+                }
             }
         })
         res.status(200).json(userPosts);
