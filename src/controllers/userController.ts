@@ -30,3 +30,20 @@ export const getUserPosts = async(req:Request, res:Response): Promise<void> =>{
         res.status(500).json({error:`error fetching posts details for user ${user.firstName}, error: ${error}`})
     }
 }
+
+export const deleteUserPostById = async(req: Request, res: Response): Promise<void> => {
+    const {user} = req.user as JwtPayload;
+    const postId = req.params.id;
+
+    try{
+        const deletedPost = await prismaClient.post.delete({
+            where:{
+                id: postId
+            },
+
+        })
+        res.status(200).json(deletedPost)
+    }catch(error){
+        res.status(500).json({error:`error delete posts for user ${user.firstName}, error: ${error}`})
+    }
+}

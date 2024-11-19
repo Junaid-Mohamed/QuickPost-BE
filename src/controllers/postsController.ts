@@ -54,8 +54,6 @@ export const createPosts = async(req: Request, res: Response): Promise<void> => 
     
 }
 
-
-
 export const updatePostWithLikes = async(req: Request, res: Response): Promise<void> =>{
     const {postId, liked} = req.body;
     try{
