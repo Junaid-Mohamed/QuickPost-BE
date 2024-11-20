@@ -98,7 +98,7 @@ export const getBookmarkedPosts = async(req: Request, res: Response): Promise<vo
 export const updatePostWithBookmark = async(req: Request, res: Response): Promise<void> =>{
     const {user} = req.user as JwtPayload;
     const {postId, isBookmarked} = req.body;
-    console.log(postId, isBookmarked);
+
     try{ 
         const updatedUserWithBookmark = await prismaClient.user.update({
             where:{
