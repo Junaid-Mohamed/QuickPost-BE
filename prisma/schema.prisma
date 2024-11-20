@@ -25,6 +25,7 @@ model User {
   googleId String?
 
   posts Post[]
+  bookmarkedPosts Post[] @relation("BookmarkedPosts")
 
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
@@ -38,6 +39,7 @@ model Post {
   author User @relation(fields: [authorId], references: [id])
   authorId String
 
+  bookmarkedBy User[] @relation("BookmarkedPosts")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
