@@ -82,7 +82,11 @@ export const getBookmarkedPosts = async(req: Request, res: Response): Promise<vo
     try{
         const userWithBookmarks = await prismaClient.user.findUnique({
             where: {id: user.id},
-            include: {bookmarkedPosts: true}
+            include: {bookmarkedPosts: {
+                include: {
+                    author: true
+                }
+            }},
         })
         res.status(200).json(userWithBookmarks);
     }catch(error){
@@ -93,19 +97,24 @@ export const getBookmarkedPosts = async(req: Request, res: Response): Promise<vo
 
 export const updatePostWithBookmark = async(req: Request, res: Response): Promise<void> =>{
     const {user} = req.user as JwtPayload;
-    const {postId, bookmark} = req.body;
-
+    const {postId, isBookmarked} = req.body;
+    console.log(postId, isBookmarked);
     try{ 
         const updatedUserWithBookmark = await prismaClient.user.update({
             where:{
                 id: user.id
             },
             data:{
-                bookmarkedPosts: bookmark === "true" ? {connect: {id: postId}} : {disconnect:{id: postId}}
+                bookmarkedPosts: isBookmarked === true ? {connect: {id: postId}} : {disconnect:{id: postId}}
             },
-            include: {bookmarkedPosts: true}
+            include: {bookmarkedPosts: {
+                include:{
+                    author: true
+                }
+            }}
 
         })
+        
         res.status(200).json(updatedUserWithBookmark);
     }catch(error){
         res.status(500).json({error:`error to get bookmarked posts for user ${user.firstName}, error: ${error}`}) 
