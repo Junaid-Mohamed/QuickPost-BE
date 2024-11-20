@@ -19,6 +19,7 @@ model User {
   lastName String?
   email String @unique
   profileImageURL String?
+  bio String?
   //  for passowrd bsed login
   password String?
   // stores the Google `sub` claim for OAuth users
