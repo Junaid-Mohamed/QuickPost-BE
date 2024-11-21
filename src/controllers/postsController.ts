@@ -2,6 +2,7 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { prismaClient } from "../clients/db";
+import cloudinary from "../utils/cloudinary";
 
 // return all the posts
 export const getPosts = async(req: Request, res: Response): Promise<void> => {
@@ -25,16 +26,27 @@ export const getPosts = async(req: Request, res: Response): Promise<void> => {
 }
 
 // after creating post return post
-export const createPosts = async(req: Request, res: Response): Promise<void> => {
+export const createPost = async(req: Request, res: Response): Promise<void> => {
     // console.log(req.user,req.body.content,req.body.imageUrl);
-    const {content, imageUrl} = req.body;
+    const {content} = req.body;
     const {user} = req.user as JwtPayload;
 
     try{
+
+        let imageUrl = null;
+        if(req.file){
+            const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'posts',
+                resource_type: 'auto'
+            })
+            imageUrl = uploadResult.secure_url;
+        }
+
+
         const post = await prismaClient.post.create({
             data:{
-                content: content,
-                imageUrl: imageUrl,
+                content,
+                imageUrl,
                 author: {connect: {id: user.id }}
             },
             include:{

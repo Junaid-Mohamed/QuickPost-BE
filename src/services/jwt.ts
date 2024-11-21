@@ -1,6 +1,5 @@
 import { User } from "@prisma/client";
 import JWT from "jsonwebtoken";
-import { prismaClient } from "../clients/db";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 

@@ -3,9 +3,40 @@ import { connect } from "http2";
 import { JwtPayload } from "jsonwebtoken";
 import { prismaClient } from "../clients/db";
 
-export const getUserById = (req: Request, res: Response): void => {
+export const getUserById = async(req: Request, res: Response): Promise<void> => {
+    
+    const {user} = req.user as JwtPayload;  
+    try{
+        const currentUser = await prismaClient.user.findUnique({
+            where:{
+                id:user.id
+            }
+        })
+        res.status(200).json(currentUser);
+    }catch(error){
+        res.status(500).json({error:`error fetching user details for user ${user.firstName}, error: ${error}`}) 
+    }
+}
+
+export const updateUserProfile = async (req:Request, res: Response): Promise<void> =>{
     const {user} = req.user as JwtPayload;
-    res.status(200).json(user)
+    const {profileImage, bio} = req.body;
+    console.log("Inside update user profile", profileImage,bio)
+    try{
+        const udpatedUser = await prismaClient.user.update({
+            where:{
+                id: user.id
+            },
+            data:{
+                bio,
+                profileImageURL: profileImage
+            }
+        })
+        res.status(200).json(udpatedUser)
+    }catch(error){
+        res.status(500).json({error:`error updating user details for user ${user.firstName}, error: ${error}`})
+    }
+    
 }
 
 export const getUserPosts = async(req:Request, res:Response): Promise<void> =>{
@@ -98,7 +129,6 @@ export const getBookmarkedPosts = async(req: Request, res: Response): Promise<vo
 export const updatePostWithBookmark = async(req: Request, res: Response): Promise<void> =>{
     const {user} = req.user as JwtPayload;
     const {postId, isBookmarked} = req.body;
-
     try{ 
         const updatedUserWithBookmark = await prismaClient.user.update({
             where:{
@@ -114,7 +144,6 @@ export const updatePostWithBookmark = async(req: Request, res: Response): Promis
             }}
 
         })
-        
         res.status(200).json(updatedUserWithBookmark);
     }catch(error){
         res.status(500).json({error:`error to get bookmarked posts for user ${user.firstName}, error: ${error}`}) 
