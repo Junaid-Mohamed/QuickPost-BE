@@ -36,7 +36,7 @@ export const createPost = async(req: Request, res: Response): Promise<void> => {
         let imageUrl = null;
         if(req.file){
             const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-                folder: 'posts',
+                folder: `posts/${user.id}-${user.firstName}`,
                 resource_type: 'auto'
             })
             imageUrl = uploadResult.secure_url;
