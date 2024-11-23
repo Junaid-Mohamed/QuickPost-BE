@@ -27,19 +27,20 @@ export const getPosts = async(req: Request, res: Response): Promise<void> => {
 
 // after creating post return post
 export const createPost = async(req: Request, res: Response): Promise<void> => {
-    // console.log(req.user,req.body.content,req.body.imageUrl);
     const {content} = req.body;
     const {user} = req.user as JwtPayload;
 
     try{
 
         let imageUrl = null;
+        let resourceType=null;
         if(req.file){
             const uploadResult = await cloudinary.uploader.upload(req.file.path, {
                 folder: `posts/${user.id}-${user.firstName}`,
                 resource_type: 'auto'
             })
             imageUrl = uploadResult.secure_url;
+            resourceType = uploadResult.resource_type;
         }
 
 
@@ -47,6 +48,7 @@ export const createPost = async(req: Request, res: Response): Promise<void> => {
             data:{
                 content,
                 imageUrl,
+                resourceType,
                 author: {connect: {id: user.id }}
             },
             include:{

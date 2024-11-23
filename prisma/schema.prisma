@@ -50,6 +50,7 @@ model Post {
   id       String  @id @default(cuid())
   content  String
   imageUrl String?
+  resourceType String? // image or video
   likes    Int     @default(0)
   author   User    @relation(fields: [authorId], references: [id])
   authorId String
