@@ -166,11 +166,26 @@ export const signUp = async (req: Request,res: Response) => {
         return;
     }
 }
-
+// try{
+//     const currentUser = await prismaClient.user.findUnique({
+//         where:{
+//             id:user.id
+//         },
+//         include:{
+//             bookmarkedPosts:  true,
+//             followers: true,
+//             followings: true
+//         }
+//     })
+//     res.status(200).json(currentUser);
+// }catch(error){
+//     res.status(500).json({error:`error fetching user details for user ${user.firstName}, error: ${error}`}) 
+// }
 export const verifyToken = async(req: Request, res: Response) => {
     const token = req.headers.authorization?.split(' ')[1];
     if(token){
         const user = JWTService.verifyToken(token);
+        console.log(user);
         res.status(200).json(user)
     }else{
         res.status(404).json({error:"token not found please login again"})
@@ -180,6 +195,7 @@ export const verifyToken = async(req: Request, res: Response) => {
 //  this will verify the JWT and act as middleware to other protected routes
 export const verifySignIn = async(req: Request, res: Response,next: NextFunction) => {
     try{
+        console.log("inside verify sign in")
         const token = req.headers.authorization?.split(' ')[1];
     if(!token){
         res.status(401).json({error:"token not found please login again"})

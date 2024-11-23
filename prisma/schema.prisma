@@ -14,33 +14,47 @@ datasource db {
 }
 
 model User {
-  id String @id @default(cuid())
-  firstName String
-  lastName String?
-  email String @unique
+  id              String  @id @default(cuid())
+  firstName       String
+  lastName        String?
+  email           String  @unique
   profileImageURL String?
-  bio String?
+  bio             String?
   //  for passowrd bsed login
-  password String?
+  password        String?
   // stores the Google `sub` claim for OAuth users
-  googleId String?
+  googleId        String?
 
-  posts Post[]
+  posts           Post[]
   bookmarkedPosts Post[] @relation("BookmarkedPosts")
+
+  followers  Follows[] @relation("follower")
+  followings Follows[] @relation("following")
 
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
 }
 
+model Follows {
+  follower   User   @relation("follower", fields: [followerId], references: [id])
+  followerId String
+
+  following   User   @relation("following", fields: [followingId], references: [id])
+  followingId String
+
+  //  composite id
+  @@id([followerId, followingId])
+}
+
 model Post {
-  id String @id @default(cuid())
-  content String
+  id       String  @id @default(cuid())
+  content  String
   imageUrl String?
-  likes Int @default(0)
-  author User @relation(fields: [authorId], references: [id])
+  likes    Int     @default(0)
+  author   User    @relation(fields: [authorId], references: [id])
   authorId String
 
-  bookmarkedBy User[] @relation("BookmarkedPosts")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  bookmarkedBy User[]   @relation("BookmarkedPosts")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

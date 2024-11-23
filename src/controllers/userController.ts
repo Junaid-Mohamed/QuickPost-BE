@@ -10,6 +10,11 @@ export const getUserById = async(req: Request, res: Response): Promise<void> => 
         const currentUser = await prismaClient.user.findUnique({
             where:{
                 id:user.id
+            },
+            include:{
+                bookmarkedPosts:  true,
+                followers: true,
+                followings: true
             }
         })
         res.status(200).json(currentUser);
@@ -18,10 +23,29 @@ export const getUserById = async(req: Request, res: Response): Promise<void> => 
     }
 }
 
+export const getSecondaryUser = async(req: Request, res: Response): Promise<void> => {
+    const userId = req.params.id;
+    try{
+        const secondaryUser = await prismaClient.user.findUnique({
+            where:{
+                id: userId
+            },
+            include:{
+                posts: true,
+                followers: true,
+                followings: true
+            }
+        })
+        res.status(200).json(secondaryUser);
+    }catch(error){
+        res.status(500).json({error:`error fetching user profile details, error: ${error}`}) 
+    }
+}
+
+
 export const updateUserProfile = async (req:Request, res: Response): Promise<void> =>{
     const {user} = req.user as JwtPayload;
     const {profileImage, bio} = req.body;
-    console.log("Inside update user profile", profileImage,bio)
     try{
         const udpatedUser = await prismaClient.user.update({
             where:{
@@ -40,11 +64,12 @@ export const updateUserProfile = async (req:Request, res: Response): Promise<voi
 }
 
 export const getUserPosts = async(req:Request, res:Response): Promise<void> =>{
-    const {user} = req.user as JwtPayload;
+    
+    const userId = req.params.id;
     try{
         const userPosts = await prismaClient.post.findMany({
             where:{
-                authorId : user.id
+                authorId : userId
             },
             include: {
                 author:{
@@ -56,10 +81,11 @@ export const getUserPosts = async(req:Request, res:Response): Promise<void> =>{
                 }
             }
         })
+        
         res.status(200).json(userPosts);
     }
     catch(error){
-        res.status(500).json({error:`error fetching posts details for user ${user.firstName}, error: ${error}`})
+        res.status(500).json({error:`error fetching posts details for user ${userId}, error: ${error}`})
     }
 }
 
@@ -149,3 +175,30 @@ export const updatePostWithBookmark = async(req: Request, res: Response): Promis
         res.status(500).json({error:`error to get bookmarked posts for user ${user.firstName}, error: ${error}`}) 
     }
 }
+
+//  follows functionality
+
+export const updateFollow = async(req: Request, res:Response): Promise<void> =>{
+
+    const {from,to,follow} = req.body;
+    try{
+        if(follow){
+            await prismaClient.follows.create({
+                data:{
+                    follower: {connect: {id:from}},
+                    following: {connect: {id:to}}
+                }
+            })
+        }else{
+            await prismaClient.follows.delete({
+                where: {followerId_followingId: {followerId:from, followingId:to}}
+            })
+        }
+        res.status(200).json({message:"updated successfully"})
+
+    }catch(error){
+        res.status(500).json({error:`error to followUser ${error}`})
+    }
+
+}
+
