@@ -23,6 +23,27 @@ export const getUserById = async(req: Request, res: Response): Promise<void> => 
     }
 }
 
+export const getAllUsers = async(req: Request, res: Response): Promise<void> => {
+    
+    const {user} = req.user as JwtPayload;  
+    try{
+        const allUser = await prismaClient.user.findMany({
+            where:{
+                id:{
+                    not:user.id
+                }, 
+            },
+            include:{
+                followers: true,
+                followings: true
+            }
+        })
+        res.status(200).json(allUser);
+    }catch(error){
+        res.status(500).json({error:`error fetching all user details , error: ${error}`}) 
+    }
+}
+
 export const getSecondaryUser = async(req: Request, res: Response): Promise<void> => {
     const userId = req.params.id;
     try{

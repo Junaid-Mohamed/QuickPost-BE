@@ -1,10 +1,11 @@
 import express, { Request, Response } from "express";
 import { verifySignIn } from "../controllers/authController";
-import { deleteUserPostById, getBookmarkedPosts, getSecondaryUser, getUserById, getUserPosts, updateFollow, updatePostWithBookmark, updateUserPostById, updateUserProfile } from "../controllers/userController";
+import { deleteUserPostById, getAllUsers, getBookmarkedPosts, getSecondaryUser, getUserById, getUserPosts, updateFollow, updatePostWithBookmark, updateUserPostById, updateUserProfile } from "../controllers/userController";
 
 const router = express.Router();
 
 router.get('/', verifySignIn,getUserById)
+router.get('/allusers',verifySignIn,getAllUsers);
 router.get('/user/:id', verifySignIn,getSecondaryUser)
 router.get('/posts/user/:id', verifySignIn,getUserPosts)
 router.delete('/:id',verifySignIn, deleteUserPostById)
