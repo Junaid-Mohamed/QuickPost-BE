@@ -13,7 +13,9 @@ export const getPosts = async(req: Request, res: Response): Promise<void> => {
                     select:{
                         firstName: true,
                         lastName: true,
-                        profileImageURL: true
+                        profileImageURL: true,
+                        followings: true,
+                        followers: true
                     }
                 }
             }
