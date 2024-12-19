@@ -30,7 +30,11 @@ export const getPosts = async(req: Request, res: Response): Promise<void> => {
 // after creating post return post
 export const createPost = async(req: Request, res: Response): Promise<void> => {
     const {content} = req.body;
-    const {user} = req.user as JwtPayload;
+    // const {user} = req.user as JwtPayload;
+    let user = {
+        id: "",
+        firstName:""
+    }
 
     try{
 
